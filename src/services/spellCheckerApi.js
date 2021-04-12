@@ -27,9 +27,9 @@ export default function spellCheckerApi(text) {
   return axios
     .request(options)
     .then(function (response) {
-      return response.data.spellingErrorCount
+      return response
     })
     .catch(function (error) {
-      console.error(error)
+      return error.response
     })
 }

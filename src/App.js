@@ -1,27 +1,30 @@
 import { useState, useEffect, useRef } from "react"
 import "./App.css"
-import checkSpelling from "./spellCheckerApi"
+import checkSpelling from "./services/spellCheckerApi"
+import ProofedText from "./ProofedText"
+import getWordArray from "./services/getWordArray"
 
 export default function App() {
   const DEFAULT_TIME = 5
 
-  const [isFirstRender, setIsFirstRender] = useState(true)
+  const [isResultDisplay, setIsResultDisplay] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(DEFAULT_TIME)
   const [isTimeRunning, setIsTimeRunning] = useState(false)
+  const [error, setError] = useState(null)
   const [numWords, setNumWord] = useState(0)
-  const [numSpellingErrors, setNumSpellingErrors] = useState(0)
+  const [spellingErrors, setSpellingErrors] = useState([])
+  const [hasTextProofed, setHasTextProofed] = useState(false)
   const textAreaRef = useRef(null)
 
-  function countWords(text) {
-    const words = text.trim().split(" ")
-    return words.filter((word) => /[a-zA-Z]/.test(word)).length
-  }
+  const style = { display: isResultDisplay ? "block" : "none" }
 
   function startTest() {
+    setIsResultDisplay(false)
     setTimeRemaining(DEFAULT_TIME)
     setIsTimeRunning(true)
     setNumWord(0)
-    setNumSpellingErrors(0)
+    setSpellingErrors([])
+    setHasTextProofed(false)
     textAreaRef.current.value = ""
     textAreaRef.current.disabled = false
     textAreaRef.current.focus()
@@ -29,17 +32,24 @@ export default function App() {
 
   async function stopTest() {
     setIsTimeRunning(false)
-    setNumSpellingErrors(await checkSpelling(textAreaRef.current.value))
-    setNumWord(countWords(textAreaRef.current.value))
+    const response = await checkSpelling(textAreaRef.current.value)
+    if (response.status === 200) {
+      setSpellingErrors(response.data.elements[0].errors.map((error) => error.word))
+      setNumWord(getWordArray(textAreaRef.current.value).length)
+      setHasTextProofed(true)
+      setIsResultDisplay(true)
+    } else {
+      setError(response.data.message)
+      setIsResultDisplay(true)
+    }
   }
 
   useEffect(() => {
     if (isTimeRunning && timeRemaining > 0) {
-      setIsFirstRender(false)
       setTimeout(() => {
         setTimeRemaining((time) => time - 1)
       }, 1000)
-    } else if (timeRemaining === 0) {
+    } else if (isTimeRunning && timeRemaining === 0) {
       stopTest()
     }
   }, [timeRemaining, isTimeRunning]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -55,12 +65,17 @@ export default function App() {
           <textarea ref={textAreaRef} disabled={!isTimeRunning} />
           <div className="counter">{timeRemaining}</div>
         </div>
+        {hasTextProofed && <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />}
         <button onClick={startTest} disabled={isTimeRunning}>
           Start
         </button>
-        <p>{!isFirstRender && !isTimeRunning ? "Word count: " + numWords : ""}</p>
-        <p>{!isFirstRender && !isTimeRunning ? "Spelling Errors: " + numSpellingErrors : ""}</p>
-        <p>{!isFirstRender && !isTimeRunning ? "Result: " + (numWords - numSpellingErrors) : ""}</p>
+        <p style={style}>Word count: {numWords}</p>
+        <p style={style} className="display-linebreak">
+          Spelling Errors: {!error && spellingErrors.length}
+          {error && <span className="error">Not available</span>}
+        </p>
+
+        <p style={style}>Result: {numWords - spellingErrors.length}</p>
       </main>
     </div>
   )

@@ -14,3 +14,15 @@ textarea {
   width: 300px;
   height: 100px;
 }
+
+.display-linebreak {
+  white-space: pre-line;
+}
+
+.error {
+  color: red;
+}
+
+.correct {
+  color: green;
+}
