@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react"
+import "./App.css"
 
-function App() {
+export default function App() {
+  const DEFAULT_TIME = 5
+
+  const [text, setText] = useState("")
+  const [timeRemaining, setTimeRemaining] = useState(DEFAULT_TIME)
+  const [isTimeRunning, setIsTimeRunning] = useState(false)
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header className="header">
+        <h1>Typing Speed Test</h1>
+        <p>How fast can you type?</p>
       </header>
+      <main>
+        <div className="textBoxContainer">
+          <textarea rows="10" cols="50" />
+          <div className="counter">{timeRemaining}</div>
+        </div>
+        <button>Start</button>
+        <p>Word count: 0</p>
+      </main>
     </div>
-  );
+  )
 }
-
-export default App;
