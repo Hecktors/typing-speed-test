@@ -1,6 +1,7 @@
 import axios from "axios"
 
-export default function spellCheckerApi(text) {
+export default function spellCheckerApi(text, language) {
+  console.log(text, language)
   const options = {
     method: "POST",
     url: "https://jspell-checker.p.rapidapi.com/check",
@@ -10,14 +11,14 @@ export default function spellCheckerApi(text) {
       "x-rapidapi-host": "jspell-checker.p.rapidapi.com",
     },
     data: {
-      language: "enUS",
+      language: language,
       fieldvalues: text,
       config: {
         forceUpperCase: false,
         ignoreIrregularCaps: false,
         ignoreFirstCaps: true,
         ignoreNumbers: true,
-        ignoreUpper: false,
+        ignoreUpper: true,
         ignoreDouble: false,
         ignoreWordsWithNumbers: true,
       },

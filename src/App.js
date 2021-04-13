@@ -1,58 +1,55 @@
-import { useState, useEffect, useRef } from "react"
 import "./App.css"
-import checkSpelling from "./services/spellCheckerApi"
-import ProofedText from "./ProofedText"
-import getWordArray from "./services/getWordArray"
+
+import ProofedText from "./components/ProofedText"
+import useTypingText from "./hooks/useTypingTest"
 
 export default function App() {
-  const DEFAULT_TIME = 5
+  const userLang = (navigator.language || navigator.userLanguage).replace("-", "")
 
-  const [isResultDisplay, setIsResultDisplay] = useState(false)
-  const [timeRemaining, setTimeRemaining] = useState(DEFAULT_TIME)
-  const [isTimeRunning, setIsTimeRunning] = useState(false)
-  const [error, setError] = useState(null)
-  const [numWords, setNumWord] = useState(0)
-  const [spellingErrors, setSpellingErrors] = useState([])
-  const [hasTextProofed, setHasTextProofed] = useState(false)
-  const textAreaRef = useRef(null)
+  const DEFAULT_LANGUAGE = (navigator.language || navigator.userLanguage).replace("-", "")
+  const DEFAULT_TIME = 60
 
-  const style = { display: isResultDisplay ? "block" : "none" }
+  const {
+    language,
+    testTime,
+    timeRemaining,
+    validNumWords,
+    apiError,
+    wmp,
+    isTestRunning,
+    hasTextProofed,
+    hasResult,
+    spellingErrors,
+    numWords,
+    textAreaRef,
+    updateTestTime,
+    updateLanguage,
+    startTest,
+    getSpeedLevel,
+  } = useTypingText(DEFAULT_TIME, DEFAULT_LANGUAGE)
 
-  function startTest() {
-    setIsResultDisplay(false)
-    setTimeRemaining(DEFAULT_TIME)
-    setIsTimeRunning(true)
-    setNumWord(0)
-    setSpellingErrors([])
-    setHasTextProofed(false)
-    textAreaRef.current.value = ""
-    textAreaRef.current.disabled = false
-    textAreaRef.current.focus()
+  console.log(
+    "App ",
+    language,
+    testTime,
+    wmp,
+    hasResult,
+    numWords,
+    spellingErrors,
+    hasTextProofed,
+    apiError,
+    timeRemaining
+  )
+
+  const languageOptions = {
+    enUS: "english",
+    frFR: "french",
+    esES: "spanish",
+    itIT: "italian",
+    deDE: "german",
   }
 
-  async function stopTest() {
-    setIsTimeRunning(false)
-    const response = await checkSpelling(textAreaRef.current.value)
-    if (response.status === 200) {
-      setSpellingErrors(response.data.elements[0].errors.map((error) => error.word))
-      setNumWord(getWordArray(textAreaRef.current.value).length)
-      setHasTextProofed(true)
-      setIsResultDisplay(true)
-    } else {
-      setError(response.data.message)
-      setIsResultDisplay(true)
-    }
-  }
-
-  useEffect(() => {
-    if (isTimeRunning && timeRemaining > 0) {
-      setTimeout(() => {
-        setTimeRemaining((time) => time - 1)
-      }, 1000)
-    } else if (isTimeRunning && timeRemaining === 0) {
-      stopTest()
-    }
-  }, [timeRemaining, isTimeRunning]) // eslint-disable-line react-hooks/exhaustive-deps
+  const timeOptions = [60, 120, 180, 300, 600]
 
   return (
     <div className="App">
@@ -60,22 +57,72 @@ export default function App() {
         <h1>Typing Speed Test</h1>
         <p>How fast can you type?</p>
       </header>
+
       <main>
-        <div className="textBoxContainer">
-          <textarea ref={textAreaRef} disabled={!isTimeRunning} />
-          <div className="counter">{timeRemaining}</div>
-        </div>
-        {hasTextProofed && <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />}
-        <button onClick={startTest} disabled={isTimeRunning}>
-          Start
-        </button>
-        <p style={style}>Word count: {numWords}</p>
-        <p style={style} className="display-linebreak">
-          Spelling Errors: {!error && spellingErrors.length}
-          {error && <span className="error">Not available</span>}
+        <p>
+          {Object.keys(languageOptions).map((lgCode) => (
+            <label key={lgCode}>
+              <input
+                onChange={updateLanguage}
+                type="radio"
+                name="language"
+                value={lgCode}
+                checked={language === lgCode}
+              />
+              {languageOptions[lgCode]}
+            </label>
+          ))}
         </p>
 
-        <p style={style}>Result: {numWords - spellingErrors.length}</p>
+        <p>
+          {timeOptions.map((sec) => {
+            return (
+              <label key={sec}>
+                <input
+                  onChange={updateTestTime}
+                  type="radio"
+                  name="minute"
+                  value={sec}
+                  checked={testTime === sec}
+                />
+                {sec / 60} min{" "}
+              </label>
+            )
+          })}
+        </p>
+
+        <div className="textBoxContainer">
+          <textarea ref={textAreaRef} disabled={!isTestRunning} />
+          <div className="counter">{timeRemaining} sec</div>
+        </div>
+
+        {hasTextProofed && <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />}
+
+        <button onClick={startTest} disabled={isTestRunning}>
+          Start
+        </button>
+
+        {hasResult && (
+          <div className="result-container">
+            <h3>Result</h3>
+            <p>
+              <span className="result-title">Words:</span>
+              {numWords}
+            </p>
+            <p>
+              <span className="result-title">Errors:</span>
+              {apiError ? "Not available" : spellingErrors.length}
+            </p>
+            <p>
+              <span className="result-title">Counted Words:</span>
+              {validNumWords}
+            </p>
+            <p className="main-result">
+              {wmp}wpm - {getSpeedLevel(wmp).toUpperCase()}
+            </p>
+          </div>
+        )}
+        {!hasResult && apiError && <p className="error">{apiError}</p>}
       </main>
     </div>
   )

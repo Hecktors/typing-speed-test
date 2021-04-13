@@ -1,4 +1,4 @@
-import getWordArray from "./services/getWordArray"
+import getWordArray from "../services/getWordArray"
 
 export default function ProofreadedText({ text, errors }) {
   const words = getWordArray(text)
