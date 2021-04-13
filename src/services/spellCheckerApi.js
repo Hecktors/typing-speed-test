@@ -1,7 +1,6 @@
 import axios from "axios"
 
 export default function spellCheckerApi(text, language) {
-  console.log(text, language)
   const options = {
     method: "POST",
     url: "https://jspell-checker.p.rapidapi.com/check",

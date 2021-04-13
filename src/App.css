@@ -2,13 +2,18 @@ h1 {
   margin: 0;
 }
 
+#root,
+html,
+body,
+.App {
+  height: 100%;
+}
+
 .App {
   text-align: center;
   background-color: #282c34;
   color: white;
-  min-height: 100vh;
   width: 100%;
-  max-width: 600px;
   margin: auto;
 }
 
