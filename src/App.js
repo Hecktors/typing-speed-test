@@ -4,8 +4,6 @@ import ProofedText from "./components/ProofedText"
 import useTypingText from "./hooks/useTypingTest"
 
 export default function App() {
-  const userLang = (navigator.language || navigator.userLanguage).replace("-", "")
-
   const DEFAULT_LANGUAGE = (navigator.language || navigator.userLanguage).replace("-", "")
   const DEFAULT_TIME = 60
 
@@ -27,19 +25,6 @@ export default function App() {
     startTest,
     getSpeedLevel,
   } = useTypingText(DEFAULT_TIME, DEFAULT_LANGUAGE)
-
-  console.log(
-    "App ",
-    language,
-    testTime,
-    wmp,
-    hasResult,
-    numWords,
-    spellingErrors,
-    hasTextProofed,
-    apiError,
-    timeRemaining
-  )
 
   const languageOptions = {
     enUS: "english",

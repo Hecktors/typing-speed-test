@@ -50,7 +50,6 @@ export default function useTypingText(initTestTime, initLanguage) {
 
   let validNumWords = numWords - spellingErrors.length > 0 ? numWords - spellingErrors.length : 0
   const wmp = Math.floor((60 / testTime) * validNumWords)
-  console.log(wmp, testTime, validNumWords)
 
   useEffect(() => {
     if (isTestRunning && timeRemaining > 0) {
@@ -83,14 +82,12 @@ export default function useTypingText(initTestTime, initLanguage) {
     clearTimeout(timerRef.current)
     setIsTestRunning(false)
     if (!timeRemaining) {
-      console.log("stop")
       if (!textAreaRef.current.value) {
         setApiError("No text provided")
         return
       }
       const { status, data } = await checkSpelling(textAreaRef.current.value, language)
       if (status === 200) {
-        console.log("data", data)
         if (data.spellingErrorCount) {
           setSpellingErrors(data.elements[0].errors.map((error) => error.word))
         }
