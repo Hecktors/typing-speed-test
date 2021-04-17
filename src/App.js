@@ -9,7 +9,7 @@ import Result from "./components/Result"
 
 export default function App() {
   const DEFAULT_LANGUAGE = (navigator.language || navigator.userLanguage).replace("-", "")
-  const DEFAULT_TIME = 60
+  const DEFAULT_TIME = 5
 
   const {
     settings,
@@ -29,10 +29,18 @@ export default function App() {
 
   return (
     <div className="App">
+      <div className="counter">
+        {Number(timeLeft).toLocaleString("en-US", {
+          minimumIntegerDigits: 3,
+          useGrouping: false,
+        })}{" "}
+        sec
+      </div>
       <Header />
       <main>
         <Settings settings={settings} updateSettings={updateSettings} />
-        <TypingTest textAreaRef={textAreaRef} isDisabled={!isTestRunning} num={timeLeft} />
+
+        <TypingTest textAreaRef={textAreaRef} isDisabled={!isTestRunning} />
 
         {hasTextProofed && <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />}
 

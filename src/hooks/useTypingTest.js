@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import checkSpelling from "../services/spellCheckerApi"
-import getWordArray from "../services/getWordArray"
+import convertTextToWordArray from "../services/convertTextToWordArray"
 
 export default function useTypingText(initLanguage, initTime) {
   const [settings, setSettings] = useState({
@@ -11,10 +11,11 @@ export default function useTypingText(initLanguage, initTime) {
   const [timeLeft, setTimeRemaining] = useState(initTime)
   const [spellingErrors, setSpellingErrors] = useState([])
   const [numWords, setNumWords] = useState(0)
-  const [error, setErrorMsg] = useState(null)
   const [isTestRunning, setIsTestRunning] = useState(false)
   const [hasResult, setHasResult] = useState(false)
   const [hasTextProofed, setHasTextProofed] = useState(false)
+  const [error, setErrorMsg] = useState(null)
+
   const textAreaRef = useRef(null)
   const timerRef = useRef(null)
 
@@ -63,7 +64,7 @@ export default function useTypingText(initLanguage, initTime) {
       if (data.spellingErrorCount) {
         setSpellingErrors(data.elements[0].errors.map((error) => error.word))
       }
-      setNumWords(getWordArray(textAreaRef.current.value).length)
+      setNumWords(convertTextToWordArray(textAreaRef.current.value).length)
       setHasTextProofed(true)
       setHasResult(true)
     } else {

@@ -1,46 +1,49 @@
 export default function Settings({ settings, updateSettings }) {
-  const languageOptions = {
-    enUS: "english",
-    frFR: "french",
-    esES: "spanish",
-    itIT: "italian",
-    deDE: "german",
-  }
+  const languageOptions = ["enUS", "frFR", "esES", "itIT", "deDE"]
   const timeOptions = [60, 120, 180, 300, 600]
 
-  return (
-    <div>
-      <p>
-        {Object.keys(languageOptions).map((lgCode) => (
-          <label key={lgCode}>
+  const languageList = (
+    <ul>
+      {languageOptions.map((lgCode) => (
+        <li key={lgCode}>
+          <input
+            onChange={(e) => updateSettings(e)}
+            type="radio"
+            name="language"
+            id={lgCode}
+            value={lgCode}
+            checked={settings.language === lgCode}
+          />
+          <label for={lgCode}>{lgCode.slice(0, 2)}</label>
+        </li>
+      ))}
+    </ul>
+  )
+
+  const timeList = (
+    <ul>
+      {timeOptions.map((sec) => {
+        return (
+          <li key={sec}>
             <input
               onChange={(e) => updateSettings(e)}
               type="radio"
-              name="language"
-              value={lgCode}
-              checked={settings.language === lgCode}
+              name="time"
+              id={sec}
+              value={sec}
+              checked={Number(settings.time) === sec}
             />
-            {languageOptions[lgCode]}
-          </label>
-        ))}
-      </p>
+            <label htmlFor={sec}>{sec / 60}min</label>
+          </li>
+        )
+      })}
+    </ul>
+  )
 
-      <p>
-        {timeOptions.map((sec) => {
-          return (
-            <label key={sec}>
-              <input
-                onChange={(e) => updateSettings(e)}
-                type="radio"
-                name="time"
-                value={sec}
-                checked={Number(settings.time) === sec}
-              />
-              {sec / 60} min{" "}
-            </label>
-          )
-        })}
-      </p>
+  return (
+    <div className="Settings">
+      <p>Typing language:{languageList}</p>
+      <p>Test time: {timeList}</p>
     </div>
   )
 }
