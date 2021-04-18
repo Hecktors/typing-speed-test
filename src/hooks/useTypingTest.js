@@ -12,7 +12,7 @@ export default function useTypingText(initLanguage, initTime) {
   const [spellingErrors, setSpellingErrors] = useState([])
   const [numWords, setNumWords] = useState(0)
   const [isTestRunning, setIsTestRunning] = useState(false)
-  const [hasResult, setHasResult] = useState(false)
+  const [hasResult, setHasResult] = useState()
   const [hasTextProofed, setHasTextProofed] = useState(false)
   const [error, setErrorMsg] = useState(null)
 
@@ -38,7 +38,7 @@ export default function useTypingText(initLanguage, initTime) {
 
   function resetTest() {
     setTimeRemaining(settings.time)
-    setHasResult(false)
+    setHasResult(true)
     setNumWords(0)
     setSpellingErrors([])
     setHasTextProofed(false)

@@ -1,8 +1,8 @@
-export default function Header() {
+export default function Header({ title, subTitle }) {
   return (
     <header className="header">
-      <h1>Typing Speed Test</h1>
-      <h2>How fast can you type?</h2>
+      <h1>{title}</h1>
+      <h2>{subTitle}</h2>
     </header>
   )
 }

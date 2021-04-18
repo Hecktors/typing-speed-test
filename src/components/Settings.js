@@ -1,4 +1,4 @@
-export default function Settings({ settings, updateSettings }) {
+export default function Settings({ settings, updateSettings, langText, timeText }) {
   const languageOptions = ["enUS", "frFR", "esES", "itIT", "deDE"]
   const timeOptions = [60, 120, 180, 300, 600]
 
@@ -14,7 +14,7 @@ export default function Settings({ settings, updateSettings }) {
             value={lgCode}
             checked={settings.language === lgCode}
           />
-          <label for={lgCode}>{lgCode.slice(0, 2)}</label>
+          <label htmlFor={lgCode}>{lgCode.slice(0, 2)}</label>
         </li>
       ))}
     </ul>
@@ -42,8 +42,12 @@ export default function Settings({ settings, updateSettings }) {
 
   return (
     <div className="Settings">
-      <p>Typing language:{languageList}</p>
-      <p>Test time: {timeList}</p>
+      <div>
+        {langText}:{languageList}
+      </div>
+      <div>
+        {timeText}: {timeList}
+      </div>
     </div>
   )
 }
