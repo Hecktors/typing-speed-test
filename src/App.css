@@ -32,16 +32,22 @@ body {
   margin: auto;
 }
 
+.textfield-container {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
 textarea {
   width: 100%;
   height: 120px;
 }
 
-p {
-  margin: 0.5rem 0;
-}
-
 .ProofedText {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   width: 100%;
   height: 120px;
   overflow-y: auto;
@@ -51,6 +57,10 @@ p {
   text-align: left;
   font-size: 13.333px;
   background-color: #bdabc5;
+}
+
+p {
+  margin: 0.5rem 0;
 }
 
 .counter {
@@ -76,7 +86,7 @@ p {
   justify-content: center;
   align-items: center;
   margin: auto;
-  padding: 0 2rem;
+  padding: 0 5px;
   text-align: left;
 }
 

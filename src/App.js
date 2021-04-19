@@ -7,6 +7,7 @@ import TypingTest from "./components/TypingTest"
 import Button from "./components/Button"
 import Result from "./components/Result"
 import contentData from "./data.js"
+import Loader from "./components/Loader"
 
 export default function App() {
   const DEFAULT_LANGUAGE = (navigator.language || navigator.userLanguage).replace("-", "")
@@ -18,8 +19,8 @@ export default function App() {
     errorMsg,
     wpm,
     isTestRunning,
+    isLoading,
     hasTextProofed,
-    hasResult,
     spellingErrors,
     numWords,
     textAreaRef,
@@ -41,8 +42,11 @@ export default function App() {
     levels,
   } = contentData[settings.language]
 
+  const hasResult = !timeLeft && !!textAreaRef.current.value
+
   return (
     <div className="App">
+      {isLoading && <Loader />}
       {/* Counter */}
       <div className="counter">
         {Number(timeLeft).toLocaleString("en-US", {
@@ -65,14 +69,16 @@ export default function App() {
         />
 
         {/* Textarea */}
-        <TypingTest
-          textAreaRef={textAreaRef}
-          isDisabled={!isTestRunning}
-          placeholder={textAreaPlaceholderText}
-        />
-
-        {/* Proofed Textfield */}
-        {hasTextProofed && <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />}
+        <div className="textfield-container">
+          <TypingTest
+            textAreaRef={textAreaRef}
+            isDisabled={!isTestRunning}
+            placeholder={textAreaPlaceholderText}
+          />
+          {hasTextProofed && (
+            <ProofedText text={textAreaRef.current.value} errors={spellingErrors} />
+          )}
+        </div>
 
         {/* Start button */}
         <Button text={startButtonText} onClick={startTest} disabled={isTestRunning} />
@@ -80,6 +86,7 @@ export default function App() {
         {/* Result */}
         {hasResult && (
           <Result
+            isLoading={isLoading}
             numWords={numWords}
             numValidWords={numValidWords}
             spellingErrors={spellingErrors}
@@ -92,6 +99,7 @@ export default function App() {
             wpm={wpm}
           />
         )}
+        {/* Error message */}
         {!hasResult && errorMsg && <p className="error">{errorMsg}</p>}
       </main>
     </div>

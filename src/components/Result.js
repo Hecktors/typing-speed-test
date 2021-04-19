@@ -1,34 +1,35 @@
 import getTypingLevel from "../services/getTypingLevel"
 
 export default function Result({
-  numWords,
-  numValidWords,
-  spellingErrors,
-  errorMsg,
+  isLoading,
   numOfWordsText,
+  numWords,
+  spellingErrors,
   numOfErrorsText,
   numOfValidWordsText,
+  numValidWords,
   resultText,
-  levels,
+  errorMsg,
   wpm,
+  levels,
 }) {
-  const typingLevel = getTypingLevel(wpm)
   return (
     <div className="result-container">
+      <h3>{resultText}</h3>
       <p>
         <span className="result-title">{numOfWordsText}:</span>
-        {numWords}
+        {!isLoading && numWords}
       </p>
       <p>
         <span className="result-title">{numOfErrorsText}:</span>
-        {errorMsg ? { errorMsg } : spellingErrors.length}
+        {errorMsg ? { errorMsg } : !isLoading && spellingErrors.length}
       </p>
       <p>
         <span className="result-title">{numOfValidWordsText}:</span>
-        {numValidWords}
+        {!isLoading && numValidWords}
       </p>
       <p className="main-result">
-        {resultText}: <b>{wpm}wpm</b> - {levels[typingLevel.name]} {typingLevel.icon}
+        <b>{!isLoading && wpm}wpm</b> - {!isLoading && levels[getTypingLevel(wpm)]}
       </p>
     </div>
   )

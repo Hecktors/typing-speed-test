@@ -12,9 +12,9 @@ export default function useTypingText(initLanguage, initTime) {
   const [spellingErrors, setSpellingErrors] = useState([])
   const [numWords, setNumWords] = useState(0)
   const [isTestRunning, setIsTestRunning] = useState(false)
-  const [hasResult, setHasResult] = useState()
   const [hasTextProofed, setHasTextProofed] = useState(false)
-  const [error, setErrorMsg] = useState(null)
+  const [errorMsg, setErrorMsg] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const textAreaRef = useRef(null)
   const timerRef = useRef(null)
@@ -38,11 +38,10 @@ export default function useTypingText(initLanguage, initTime) {
 
   function resetTest() {
     setTimeRemaining(settings.time)
-    setHasResult(true)
     setNumWords(0)
     setSpellingErrors([])
     setHasTextProofed(false)
-    setErrorMsg(null)
+    setErrorMsg("")
     textAreaRef.current.value = ""
   }
 
@@ -55,21 +54,22 @@ export default function useTypingText(initLanguage, initTime) {
 
   async function stopTest() {
     setIsTestRunning(false)
+    setIsLoading(true)
     if (!textAreaRef.current.value) {
       setErrorMsg("No text provided")
+      setIsLoading(false)
       return
     }
     const { status, data } = await checkSpelling(textAreaRef.current.value, settings.language)
+    setIsLoading(false)
     if (status === 200) {
       if (data.spellingErrorCount) {
         setSpellingErrors(data.elements[0].errors.map((error) => error.word))
       }
       setNumWords(convertTextToWordArray(textAreaRef.current.value).length)
       setHasTextProofed(true)
-      setHasResult(true)
     } else {
       setErrorMsg("Not available")
-      setHasResult(true)
     }
   }
 
@@ -86,10 +86,10 @@ export default function useTypingText(initLanguage, initTime) {
     numValidWords,
     numWords,
     wpm,
-    error,
+    errorMsg,
     isTestRunning,
+    isLoading,
     hasTextProofed,
-    hasResult,
     spellingErrors,
     settings,
     textAreaRef,
